@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма регистрации</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/Group12.png') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='Forma.css') }}">
+</head>
+
+<body>
+    <div class="registration-form">
+        <h2>Форма регистрации</h2>
+        <form id="registrationForm" action="{{ url_for('submit') }}" method="post" onsubmit="return validateForm()">
+            <label for="first-name">Имя:</label>
+            <input type="text" id="first-name" name="first_name" pattern="[A-Za-zА-Яа-яЁё]+" required>
+            <div class="error-message" id="firstNameError">Имя должно содержать только буквы.</div>
+
+            <label for="last-name">Фамилия:</label>
+            <input type="text" id="last-name" name="last_name" pattern="[A-Za-zА-Яа-яЁё]+" required>
+            <div class="error-message" id="lastNameError">Фамилия должна содержать только буквы.</div>
+
+            <label for="course">Email</label>
+            <input type="course" id="course" name="course" required>
+            <div class="error-message" id="courseError"></div>
+
+            <label for="university">ВУЗ:</label>
+            <input type="text" id="university" name="university" pattern="[A-Za-zА-Яа-яЁё\s]+" required>
+            <div class="error-message" id="universityError">Название ВУЗа должно содержать только буквы и пробелы.</div>
+
+            <label for="region">Регион:</label>
+            <input type="text" id="region" name="region" pattern="[A-Za-zА-Яа-яЁё\s]+" required>
+            <div class="error-message" id="regionError">Регион должен содержать только буквы и пробелы.</div>
+
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" minlength="6" required>
+            <div class="error-message" id="passwordError">Пароль должен содержать не менее 6 символов.</div>
+
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <p>Есть аккаунт? <a href="{{ url_for('login') }}" class="login-link">Войти</a></p>
+    </div>
+
+    <script>
+        function validateForm() {
+            var firstName = document.getElementById('first-name').value;
+            var lastName = document.getElementById('last-name').value;
+            var course = document.getElementById('course').value;
+            var university = document.getElementById('university').value;
+            var region = document.getElementById('region').value;
+            var password = document.getElementById('password').value;
+
+            var firstNameError = document.getElementById('firstNameError');
+            var lastNameError = document.getElementById('lastNameError');
+            var courseError = document.getElementById('courseError');
+            var universityError = document.getElementById('universityError');
+            var regionError = document.getElementById('regionError');
+            var passwordError = document.getElementById('passwordError');
+
+            var isValid = true;
+
+            if (!/^[A-Za-zА-Яа-яЁё]+$/.test(firstName)) {
+                firstNameError.style.display = 'block';
+                isValid = false;
+            } else {
+                firstNameError.style.display = 'none';
+            }
+
+            if (!/^[A-Za-zА-Яа-яЁё]+$/.test(lastName)) {
+                lastNameError.style.display = 'block';
+                isValid = false;
+            } else {
+                lastNameError.style.display = 'none';
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(course)) {
+                courseError.style.display = 'block';
+                isValid = false;
+            } else {
+                courseError.style.display = 'none';
+            }
+
+            if (!/^[A-Za-zА-Яа-яЁё\s]+$/.test(university)) {
+                universityError.style.display = 'block';
+                isValid = false;
+            } else {
+                universityError.style.display = 'none';
+            }
+
+            if (!/^[A-Za-zА-Яа-яЁё\s]+$/.test(region)) {
+                regionError.style.display = 'block';
+                isValid = false;
+            } else {
+                regionError.style.display = 'none';
+            }
+
+            if (password.length < 6) {
+                passwordError.style.display = 'block';
+                isValid = false;
+            } else {
+                passwordError.style.display = 'none';
+            }
+
+            return isValid;
+        }
+    </script>
+</body>
+
+</html>

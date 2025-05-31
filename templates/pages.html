@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интеграция презентации</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+</head>
+<body>
+    <h1>Презентация Skillcase</h1>
+    <canvas id="pdf-canvas"></canvas>
+
+    <script>
+        // Загрузка PDF-файла
+        const url = 'Skillcase.pdf';
+
+        // Загрузка PDF.js
+        pdfjsLib.getDocument(url).promise.then(function(pdf) {
+            // Получение первой страницы
+            return pdf.getPage(1);
+        }).then(function(page) {
+            const viewport = page.getViewport({ scale: 1.0 });
+            const canvas = document.getElementById('pdf-canvas');
+            const context = canvas.getContext('2d');
+
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Отрисовка страницы на canvas
+            const renderContext = {
+                canvasContext: context,
+                viewport: viewport
+            };
+            return page.render(renderContext);
+        }).catch(function(error) {
+            console.error('Ошибка при загрузке PDF:', error);
+        });
+    </script>
+</body>
+</html>

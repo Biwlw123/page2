@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страница разработчика</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/Group12.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='Developer.css') }}">
+    <style>
+        .file-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .file-table th, .file-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .file-table th {
+            background-color: #f2f2f2;
+        }
+        .file-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .download-btn {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+        .logout-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 15px;
+            background-color: #f44336;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+        .file-name {
+            font-size: 0.8em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Добро пожаловать, разработчик!</h1>
+    <p>Здесь вы можете просматривать загруженные файлы пользователей.</p>
+
+    <h2>Загруженные файлы</h2>
+    {% if files %}
+    <table class="file-table">
+        <thead>
+            <tr>
+                <th>Тип задачи</th>
+                <th>Пользователь</th>
+                <th>Email</th>
+                <th>Дата загрузки</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+            <tr>
+                <td>
+                    {{ file[5] }}
+                    <div class="file-name">Файл: {{ file[1] }}</div>
+                </td>
+                <td>{{ file[3] }} {{ file[4] }}</td>
+                <td>{{ file[6] }}</td>  <!-- Добавлено поле курса -->
+                <td>{{ file[2] }}</td>
+                <td>
+                    <a href="{{ url_for('download_file', filename=file[1]) }}" class="download-btn">Скачать</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Нет загруженных файлов.</p>
+    {% endif %}
+
+    <a href="{{ url_for('logout') }}" class="logout-btn">Выйти</a>
+</body>
+</html>

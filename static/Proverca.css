@@ -1,0 +1,108 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+    /* Светло-голубой фон */
+    color: #01579b;
+    /* Темно-синий текст */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+h1 {
+    color: #0277bd;
+    /* Средне-синий заголовок */
+    text-align: center;
+    margin-top: 20px;
+    font-size: 2.5em;
+}
+
+p {
+    color: #01579b;
+    /* Темно-синий текст */
+    text-align: center;
+    margin: 20px;
+    font-size: 1.2em;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    max-width: 600px;
+}
+
+li {
+    background-color: #ffffff;
+    border: 1px solid #0288d1;
+    border-radius: 5px;
+    margin: 10px 0;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+li strong {
+    color: #0277bd;
+    font-size: 1.2em;
+}
+
+form {
+    margin-top: 10px;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #0288d1;
+    border-radius: 5px;
+    margin-top: 10px;
+    resize: vertical;
+}
+
+button {
+    background-color: #0288d1;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #01579b;
+}
+
+a {
+    color: #0288d1;
+    /* Синяя ссылка */
+    text-decoration: none;
+    display: inline-block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    border: 2px solid #0288d1;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+a:hover {
+    background-color: #0288d1;
+    color: #ffffff;
+}
+
+.container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.container a {
+    margin: 10px;
+}

@@ -1,0 +1,88 @@
+ body {
+     font-family: 'Arial', sans-serif;
+     background-image: url('images/Vector11.png');
+     background-size: cover;
+     background-position: center;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+     margin: 0;
+ }
+
+ .registration-form {
+     background-color: #ffffff;
+     padding: 40px;
+     border-radius: 15px;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+     width: 450px;
+     max-width: 100%;
+ }
+
+ .registration-form h2 {
+     margin-bottom: 30px;
+     color: #333;
+     text-align: center;
+ }
+
+ .registration-form label {
+     display: block;
+     margin-bottom: 10px;
+     color: #555;
+     font-weight: bold;
+ }
+
+ .registration-form input,
+ .registration-form button {
+     width: 100%;
+     padding: 15px;
+     margin-bottom: 20px;
+     border: 1px solid #ddd;
+     border-radius: 8px;
+     font-size: 16px;
+     transition: border-color 0.3s;
+ }
+
+ .registration-form input:focus {
+     border-color: rgb(52, 170, 62);
+     outline: none;
+ }
+
+ .registration-form button {
+     background-color: rgb(52, 170, 62);
+     border: none;
+     color: #fff;
+     font-size: 18px;
+     cursor: pointer;
+     transition: background-color 0.3s;
+ }
+
+ .registration-form button:hover {
+     background-color: rgb(52, 170, 62);
+ }
+
+ .error-message {
+     color: red;
+     font-size: 14px;
+     margin-top: -10px;
+     margin-bottom: 20px;
+     display: none;
+ }
+
+ .login-link {
+     color: rgb(52, 170, 62);
+     text-decoration: none;
+ }
+
+ .login-link:hover,
+ .login-link:focus {
+     color: rgb(52, 170, 62);
+     text-decoration: none;
+ }
+
+ @font-face {
+     font-family: 'Cakra-Normal';
+     font-style: normal;
+     font-weight: 400;
+     src: url(fonts/Cakra-Normal.otf);
+ }
