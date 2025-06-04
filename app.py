@@ -366,30 +366,7 @@ def keep_session():
         return redirect(url_for('index'))
     else:
         return redirect(url_for('dashboard'))
-from flask import Flask, request, abort, send_file
-import os
 
-app = Flask(__name__)
-
-@app.route('/download-db')
-def download_db():
-    # 1. Проверка секретного ключа
-    if request.args.get('key') != "2005":
-        abort(403)  # Forbidden
-    
-    # 2. Укажите точный путь к базе данных
-    DB_PATH = "database.db"  # ЗАМЕНИТЕ ЭТОТ ПУТЬ!
-    
-    # 3. Проверка существования файла
-    if not os.path.exists(DB_PATH):
-        return f"Error: Database file not found at {DB_PATH}", 404
-    
-    # 4. Отправка файла с правильными параметрами
-    return send_file(
-        DB_PATH,
-        as_attachment=True,
-        download_name="website_database.sqlite"
-    )
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
