@@ -1,88 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Страница разработчика</title>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/Group12.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='Developer.css') }}">
+    <title>Панель разработчика</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .file-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
+        .user-card {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .file-table th, .file-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        .file-table th {
-            background-color: #f2f2f2;
-        }
-        .file-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .download-btn {
-            display: inline-block;
-            padding: 5px 10px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 3px;
-        }
-        .logout-btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 8px 15px;
-            background-color: #f44336;
-            color: white;
-            text-decoration: none;
-            border-radius: 3px;
-        }
-        .file-name {
-            font-size: 0.8em;
-            color: #666;
+        .file-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            background: #f8f9fa;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Добро пожаловать, разработчик!</h1>
-    <p>Здесь вы можете просматривать загруженные файлы пользователей.</p>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Панель разработчика</h1>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Выйти</a>
+        </div>
 
-    <h2>Загруженные файлы</h2>
-    {% if files %}
-    <table class="file-table">
-        <thead>
-            <tr>
-                <th>Тип задачи</th>
-                <th>Пользователь</th>
-                <th>Email</th>
-                <th>Дата загрузки</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for file in files %}
-            <tr>
-                <td>
-                    {{ file[5] }}
-                    <div class="file-name">Файл: {{ file[1] }}</div>
-                </td>
-                <td>{{ file[3] }} {{ file[4] }}</td>
-                <td>{{ file[6] }}</td>  <!-- Добавлено поле курса -->
-                <td>{{ file[2] }}</td>
-                <td>
-                    <a href="{{ url_for('download_file', filename=file[1]) }}" class="download-btn">Скачать</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>Нет загруженных файлов.</p>
-    {% endif %}
+        <div class="row">
+            <!-- Колонка с пользователями -->
+            <div class="col-md-6">
+                <h2 class="mb-3">Пользователи ({{ users|length }})</h2>
+                
+                {% if users %}
+                    {% for user in users %}
+                    <div class="card user-card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ user[1] }} {{ user[2] }}</h5>
+                            <p class="card-text">
+                                <strong>ID:</strong> {{ user[0] }}<br>
+                                <strong>Email:</strong> {{ user[3] }}<br>
+                                <strong>Университет:</strong> {{ user[4] }}<br>
+                                <strong>Регион:</strong> {{ user[5] }}<br>
+                                <strong>Файлов:</strong> {{ user[7] }}<br>
+                                <small class="text-muted">Зарегистрирован: {{ user[6] }}</small>
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">Нет зарегистрированных пользователей</div>
+                {% endif %}
+            </div>
 
-    <a href="{{ url_for('logout') }}" class="logout-btn">Выйти</a>
+            <!-- Колонка с файлами -->
+            <div class="col-md-6">
+                <h2 class="mb-3">Файлы ({{ files|length }})</h2>
+                
+                {% if files %}
+                    {% for file in files %}
+                    <div class="file-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ file[1] }}</strong><br>
+                            <small>От: {{ file[4] }} {{ file[5] }} (ID: {{ file[3] }})</small><br>
+                            <small class="text-muted">Загружен: {{ file[2] }}</small>
+                        </div>
+                        <a href="{{ url_for('download_file', filename=file[1]) }}" 
+                           class="btn btn-sm btn-primary">Скачать</a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">Нет загруженных файлов</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -269,12 +269,37 @@ def developer():
         flash('Пожалуйста, войдите.', 'error')
         return redirect(url_for('login'))
 
-    conn = sqlite3.connect('instance/data.db')
+    conn = get_db()  # Используем вашу функцию get_db()
     cursor = conn.cursor()
     
+    # Получаем всех пользователей с их файлами
     cursor.execute('''
-        SELECT uf.id, uf.file_name, uf.date_uploaded, 
-               e.first_name, e.last_name, uf.file_name, e.course
+        SELECT 
+            e.id, 
+            e.first_name, 
+            e.last_name, 
+            e.course, 
+            e.university, 
+            e.region, 
+            e.date_created,
+            COUNT(uf.id) as file_count
+        FROM entries e
+        LEFT JOIN uploaded_files uf ON e.id = uf.user_id
+        GROUP BY e.id
+        ORDER BY e.date_created DESC
+    ''')
+    users = cursor.fetchall()
+    
+    # Получаем все файлы с информацией о пользователях
+    cursor.execute('''
+        SELECT 
+            uf.id, 
+            uf.file_name, 
+            uf.date_uploaded, 
+            e.id as user_id, 
+            e.first_name, 
+            e.last_name, 
+            e.course
         FROM uploaded_files uf
         JOIN entries e ON uf.user_id = e.id
         ORDER BY uf.date_uploaded DESC
@@ -283,8 +308,7 @@ def developer():
     
     conn.close()
 
-    return render_template('Developer.html', files=files)
-
+    return render_template('Developer.html', users=users, files=files)
 @app.route('/download/<filename>')
 def download_file(filename):
     if 'user_id' not in session:
