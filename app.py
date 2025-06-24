@@ -97,68 +97,77 @@ def init_db():
         conn = get_db()
         cursor = conn.cursor()
 
-        # Drop tables if they exist (for development)
-        cursor.execute('DROP TABLE IF EXISTS comments CASCADE')
-        cursor.execute('DROP TABLE IF EXISTS uploaded_files CASCADE')
-        cursor.execute('DROP TABLE IF EXISTS entries CASCADE')
-
-        # Create tables
-        cursor.execute('''
-            CREATE TABLE entries (
-                id SERIAL PRIMARY KEY,
-                first_name TEXT NOT NULL,
-                last_name TEXT NOT NULL,
-                course TEXT NOT NULL,
-                university TEXT NOT NULL,
-                region TEXT NOT NULL,
-                password TEXT NOT NULL,
-                date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        # Проверяем существование таблиц
+        cursor.execute("""
+            SELECT EXISTS (
+                SELECT FROM pg_tables
+                WHERE schemaname = 'public' 
+                AND tablename = 'entries'
             )
-        ''')
+        """)
+        table_exists = cursor.fetchone()[0]
 
-        cursor.execute('''
-            CREATE TABLE uploaded_files (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER NOT NULL,
-                file_name TEXT NOT NULL,
-                file_path TEXT NOT NULL,
-                date_uploaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES entries (id) ON DELETE CASCADE
-            )
-        ''')
+        if not table_exists:
+            print("🛠 Создаем таблицы...")
+            cursor.execute('''
+                CREATE TABLE entries (
+                    id SERIAL PRIMARY KEY,
+                    first_name TEXT NOT NULL,
+                    last_name TEXT NOT NULL,
+                    course TEXT NOT NULL,
+                    university TEXT NOT NULL,
+                    region TEXT NOT NULL,
+                    password TEXT NOT NULL,
+                    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
 
-        cursor.execute('''
-            CREATE TABLE comments (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER NOT NULL,
-                file_id INTEGER NOT NULL,
-                message TEXT NOT NULL,
-                date_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES entries (id) ON DELETE CASCADE,
-                FOREIGN KEY (file_id) REFERENCES uploaded_files (id) ON DELETE CASCADE
-            )
-        ''')
+            cursor.execute('''
+                CREATE TABLE uploaded_files (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL,
+                    file_name TEXT NOT NULL,
+                    file_path TEXT NOT NULL,
+                    date_uploaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES entries (id) ON DELETE CASCADE
+                )
+            ''')
 
-        # Add test user
+            cursor.execute('''
+                CREATE TABLE comments (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL,
+                    file_id INTEGER NOT NULL,
+                    message TEXT NOT NULL,
+                    date_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES entries (id) ON DELETE CASCADE,
+                    FOREIGN KEY (file_id) REFERENCES uploaded_files (id) ON DELETE CASCADE
+                )
+            ''')
+            conn.commit()
+            print("✅ Таблицы созданы")
+
+        # Добавляем тестового пользователя (если не существует)
         cursor.execute('''
             INSERT INTO entries (first_name, last_name, course, university, region, password)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            ON CONFLICT DO NOTHING
-        ''', ('Олег', 'Булавин', 'Курс', 'Университет', 'Регион', 'Oleg2005'))
-
+            SELECT 'Олег', 'Булавин', 'Курс', 'Университет', 'Регион', 'Oleg2005'
+            WHERE NOT EXISTS (
+                SELECT 1 FROM entries 
+                WHERE first_name = 'Олег' AND last_name = 'Булавин'
+            )
+        ''')
         conn.commit()
-        print("Database initialized successfully")
+
     except Exception as e:
+        print(f"❌ Ошибка в init_db(): {e}")
         if conn:
             conn.rollback()
-        print(f"Database initialization error: {e}")
+        raise
     finally:
         if conn:
             cursor.close()
             conn.close()
-
-# Routes
 @app.route('/')
 def index():
     return render_template('index.html')
