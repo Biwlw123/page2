@@ -12,9 +12,28 @@ app.secret_key = os.getenv('SECRET_KEY', 'your_fallback_secret_key')
 # Database connection
 def get_db():
     db_url = os.getenv('DATABASE_URL')
-    conn = psycopg2.connect(db_url, cursor_factory=DictCursor)
-    return conn
-
+    
+    if not db_url:
+        raise ValueError("No DATABASE_URL set in environment variables")
+    
+    # Render использует postgres://, но psycopg2 требует postgresql://
+    if db_url.startswith('postgres://'):
+        db_url = db_url.replace('postgres://', 'postgresql://', 1)
+    
+    try:
+        conn = psycopg2.connect(
+            db_url,
+            cursor_factory=DictCursor,
+            sslmode='require'  # Для безопасности на Render
+        )
+        return conn
+    except psycopg2.OperationalError as e:
+        print(f"Cannot connect to database. Error: {e}")
+        print(f"Connection string was: {db_url.split('@')[0]}@***")
+        raise
+    except Exception as e:
+        print(f"Unexpected database error: {e}")
+        raise
 # Initialize database
 def init_db():
     conn = None
