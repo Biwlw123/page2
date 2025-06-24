@@ -17,7 +17,7 @@ def get_db():
         raise ValueError("No DATABASE_URL set in environment variables")
     
     # Render использует postgres://, но psycopg2 требует postgresql://
-    if db_url.startswith('postgres://'):
+    if db_url.startswith('postgresql://db_kh50_user:nXiWxj6jua5UYkJDiEkvTWYgPVSLmYNr@dpg-d10at8emcj7s73c43ueg-a/db_kh50'):
         db_url = db_url.replace('postgres://', 'postgresql://', 1)
     
     try:
