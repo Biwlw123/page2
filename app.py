@@ -7,34 +7,90 @@ from psycopg2.extras import DictCursor
 from urllib.parse import urlparse
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
-app.secret_key = os.getenv('SECRET_KEY', 'your_fallback_secret_key')
+app.secret_key = os.getenv('SECRET_KEY', 'fallback-secret-key')
 
-# Database connection
+# Конфигурация PostgreSQL (ваш URL)
+POSTGRES_URL = "postgresql://db_kh50_user:nXiWxj6jua5UYkJDiEkvTWYgPVSLmYNr@dpg-d10at8emcj7s73c43ueg-a.oregon-postgres.render.com/db_kh50"
+
 def get_db():
-    db_url = os.getenv('DATABASE_URL')
-    
-    if not db_url:
-        raise ValueError("No DATABASE_URL set in environment variables")
-    
-    # Render использует postgres://, но psycopg2 требует postgresql://
-    if db_url.startswith('postgresql://db_kh50_user:nXiWxj6jua5UYkJDiEkvTWYgPVSLmYNr@dpg-d10at8emcj7s73c43ueg-a/db_kh50'):
-        db_url = db_url.replace('postgres://', 'postgresql://', 1)
-    
     try:
         conn = psycopg2.connect(
-            db_url,
+            POSTGRES_URL,
             cursor_factory=DictCursor,
-            sslmode='require'  # Для безопасности на Render
+            sslmode='require'  # Обязательно для Render
         )
         return conn
-    except psycopg2.OperationalError as e:
-        print(f"Cannot connect to database. Error: {e}")
-        print(f"Connection string was: {db_url.split('@')[0]}@***")
-        raise
     except Exception as e:
-        print(f"Unexpected database error: {e}")
+        print(f"Ошибка подключения к PostgreSQL: {e}")
         raise
-# Initialize database
+
+# Инициализация БД
+def init_db():
+    conn = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+
+        # Удаление таблиц (только для разработки!)
+        cursor.execute('DROP TABLE IF EXISTS comments CASCADE')
+        cursor.execute('DROP TABLE IF EXISTS uploaded_files CASCADE')
+        cursor.execute('DROP TABLE IF EXISTS entries CASCADE')
+
+        # Создание таблиц
+        cursor.execute('''
+            CREATE TABLE entries (
+                id SERIAL PRIMARY KEY,
+                first_name TEXT NOT NULL,
+                last_name TEXT NOT NULL,
+                course TEXT NOT NULL,
+                university TEXT NOT NULL,
+                region TEXT NOT NULL,
+                password TEXT NOT NULL,
+                date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        cursor.execute('''
+            CREATE TABLE uploaded_files (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL,
+                file_name TEXT NOT NULL,
+                file_path TEXT NOT NULL,
+                date_uploaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES entries (id) ON DELETE CASCADE
+            )
+        ''')
+
+        cursor.execute('''
+            CREATE TABLE comments (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL,
+                file_id INTEGER NOT NULL,
+                message TEXT NOT NULL,
+                date_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES entries (id) ON DELETE CASCADE,
+                FOREIGN KEY (file_id) REFERENCES uploaded_files (id) ON DELETE CASCADE
+            )
+        ''')
+
+        # Тестовый пользователь
+        cursor.execute('''
+            INSERT INTO entries (first_name, last_name, course, university, region, password)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            ON CONFLICT DO NOTHING
+        ''', ('Олег', 'Булавин', 'Курс', 'Университет', 'Регион', 'Oleg2005'))
+
+        conn.commit()
+        print("✅ База данных инициализирована")
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"❌ Ошибка инициализации БД: {e}")
+    finally:
+        if conn:
+            cursor.close()
+            conn.close()
 def init_db():
     conn = None
     try:
