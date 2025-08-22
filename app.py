@@ -24,73 +24,7 @@ def get_db():
         print(f"Ошибка подключения к PostgreSQL: {e}")
         raise
 
-# Инициализация БД
-def init_db():
-    conn = None
-    try:
-        conn = get_db()
-        cursor = conn.cursor()
-
-        # Удаление таблиц (только для разработки!)
-        cursor.execute('DROP TABLE IF EXISTS comments CASCADE')
-        cursor.execute('DROP TABLE IF EXISTS uploaded_files CASCADE')
-        cursor.execute('DROP TABLE IF EXISTS entries CASCADE')
-
-        # Создание таблиц
-        cursor.execute('''
-            CREATE TABLE entries (
-                id SERIAL PRIMARY KEY,
-                first_name TEXT NOT NULL,
-                last_name TEXT NOT NULL,
-                course TEXT NOT NULL,
-                university TEXT NOT NULL,
-                region TEXT NOT NULL,
-                password TEXT NOT NULL,
-                date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-
-        cursor.execute('''
-            CREATE TABLE uploaded_files (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER NOT NULL,
-                file_name TEXT NOT NULL,
-                file_path TEXT NOT NULL,
-                date_uploaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES entries (id) ON DELETE CASCADE
-            )
-        ''')
-
-        cursor.execute('''
-            CREATE TABLE comments (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER NOT NULL,
-                file_id INTEGER NOT NULL,
-                message TEXT NOT NULL,
-                date_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES entries (id) ON DELETE CASCADE,
-                FOREIGN KEY (file_id) REFERENCES uploaded_files (id) ON DELETE CASCADE
-            )
-        ''')
-
-        # Тестовый пользователь
-        cursor.execute('''
-            INSERT INTO entries (first_name, last_name, course, university, region, password)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            ON CONFLICT DO NOTHING
-        ''', ('Олег', 'Булавин', 'Курс', 'Университет', 'Регион', 'Oleg2005'))
-
-        conn.commit()
-        print("✅ База данных инициализирована")
-    except Exception as e:
-        if conn:
-            conn.rollback()
-        print(f"❌ Ошибка инициализации БД: {e}")
-    finally:
-        if conn:
-            cursor.close()
-            conn.close()
+# Инициализация БД - ОДНА функция init_db()
 def init_db():
     conn = None
     try:
@@ -158,6 +92,7 @@ def init_db():
             )
         ''')
         conn.commit()
+        print("✅ База данных инициализирована")
 
     except Exception as e:
         print(f"❌ Ошибка в init_db(): {e}")
@@ -168,6 +103,7 @@ def init_db():
         if conn:
             cursor.close()
             conn.close()
+
 @app.route('/')
 def index():
     return render_template('index.html')
