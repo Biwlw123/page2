@@ -1,5 +1,5 @@
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify, send_from_directory, abort
+from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify, send_from_directory
 import psycopg2
 import os
 import uuid
@@ -10,7 +10,7 @@ app = Flask(__name__, template_folder='templates', static_folder='static')
 app.secret_key = os.getenv('SECRET_KEY', 'fallback-secret-key')
 
 # Конфигурация PostgreSQL (ваш URL)
-POSTGRES_URL = "postgresql://skillcase_user:QHnnYkavKH5DKv7RjcaawKUk4ThUexDd@dpg-d295nnuuk2gs73831480-a/skillcase"
+POSTGRES_URL = "postgresql://skillcase_user:QHnnYkavKH5DKv7RjcaawKUk4ThUexDd@dpg-d295nnuuk2gs73831480-a.oregon-postgres.render.com/skillcase"
 
 def get_db():
     try:
