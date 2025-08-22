@@ -10,7 +10,7 @@ app = Flask(__name__, template_folder='templates', static_folder='static')
 app.secret_key = os.getenv('SECRET_KEY', 'fallback-secret-key')
 
 # Конфигурация PostgreSQL (ваш URL)
-POSTGRES_URL = "postgresql://db_kh50_user:nXiWxj6jua5UYkJDiEkvTWYgPVSLmYNr@dpg-d10at8emcj7s73c43ueg-a.oregon-postgres.render.com/db_kh50"
+POSTGRES_URL = "postgresql://skillcase_user:QHnnYkavKH5DKv7RjcaawKUk4ThUexDd@dpg-d295nnuuk2gs73831480-a/skillcase"
 
 def get_db():
     try:
