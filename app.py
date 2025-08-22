@@ -14,16 +14,28 @@ POSTGRES_URL = "postgresql://skillcase_user:QHnnYkavKH5DKv7RjcaawKUk4ThUexDd@dpg
 
 def get_db():
     try:
+        # Разбираем URL на компоненты вручную
+        db_config = {
+            'dbname': 'skillcase',
+            'user': 'skillcase_user',
+            'password': 'QHnnYkavKH5DKv7RjcaawKUk4ThUexDd',
+            'host': 'dpg-d295nnuuk2gs73831480-a.oregon-postgres.render.com',
+            'port': '5432'
+        }
+        
         conn = psycopg2.connect(
-            POSTGRES_URL,
+            dbname=db_config['dbname'],
+            user=db_config['user'],
+            password=db_config['password'],
+            host=db_config['host'],
+            port=db_config['port'],
             cursor_factory=DictCursor,
-            sslmode='require'  # Обязательно для Render
+            sslmode='require'
         )
         return conn
     except Exception as e:
         print(f"Ошибка подключения к PostgreSQL: {e}")
         raise
-
 # Инициализация БД - ОДНА функция init_db()
 def init_db():
     conn = None
